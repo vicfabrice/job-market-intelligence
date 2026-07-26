@@ -1,0 +1,25 @@
+services:
+  database:
+    image: postgres:17
+    container_name: job-market-database
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: job_market_user
+      POSTGRES_PASSWORD: job_market_password
+      POSTGRES_DB: job_market
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U job_market_user -d job_market"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

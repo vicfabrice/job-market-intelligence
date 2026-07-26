@@ -1,17 +1,37 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
+from sqlalchemy import text
+from sqlalchemy.orm import Session
+
+from app.core.config import settings
+from app.core.database import get_db
 
 app = FastAPI(
-    title="Job Market Intelligence API",
-    description="API para buscar ofertas laborales y gestionar postulaciones",
+    title=settings.app_name,
     version="0.1.0",
+    debug=settings.debug,
 )
 
 
 @app.get("/")
 def root() -> dict[str, str]:
-    return {"message": "Job Market Intelligence API is running!"}
+    return {"message": f"{settings.app_name} is running"}
 
 
 @app.get("/health")
-def health() -> dict[str, str]:
-    return {"status": "healthy"}
+def health_check() -> dict[str, str]:
+    return {
+        "status": "healthy",
+        "environment": settings.app_env,
+    }
+
+
+@app.get("/health/database")
+def database_health_check(
+    database_session: Session = Depends(get_db),
+) -> dict[str, str]:
+    database_session.execute(text("SELECT 1"))
+
+    return {
+        "status": "healthy",
+        "database": "connected",
+    }
