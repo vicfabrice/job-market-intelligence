@@ -8,10 +8,6 @@ class WorkMode(StrEnum):
 
 
 class JobOfferStatus(StrEnum):
-    SAVED = "saved"
-    APPLIED = "applied"
-    INTERVIEW = "interview"
-    TECHNICAL_INTERVIEW = "technical_interview"
-    OFFER = "offer"
-    REJECTED = "rejected"
-    WITHDRAWN = "withdrawn"
+    ACTIVE = "active"
+    CLOSED = "closed"
+    EXPIRED = "expired"
