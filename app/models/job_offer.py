@@ -68,8 +68,8 @@ class JobOffer(Base):
             values_callable=lambda enum_class: [member.value for member in enum_class],
         ),
         nullable=False,
-        default=JobOfferStatus.SAVED,
-        server_default=JobOfferStatus.SAVED.value,
+        default=JobOfferStatus.ACTIVE,
+        server_default=JobOfferStatus.ACTIVE.value,
         index=True,
     )
 

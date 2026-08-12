@@ -23,7 +23,7 @@ def job_offer() -> JobOffer:
         source_url="https://acme.com/jobs/python-backend",
         location="Buenos Aires",
         work_mode=WorkMode.REMOTE,
-        status=JobOfferStatus.SAVED,
+        status=JobOfferStatus.ACTIVE,
         salary_min=Decimal(2500000),
         salary_max=Decimal(3500000),
         currency="ARS",
@@ -84,7 +84,7 @@ def test_create_job_offer_returns_created_offer(
     assert response_body["title"] == "Python Backend Developer"
     assert response_body["company_id"] == 1
     assert response_body["work_mode"] == "remote"
-    assert response_body["status"] == "saved"
+    assert response_body["status"] == "active"
 
     job_offer_service.create.assert_called_once()
 
@@ -165,18 +165,18 @@ def test_update_job_offer_returns_updated_offer(
     job_offer_service: Mock,
     job_offer: JobOffer,
 ) -> None:
-    job_offer.status = JobOfferStatus.INTERVIEW
+    job_offer.status = JobOfferStatus.CLOSED
     job_offer_service.update.return_value = job_offer
 
     response = client.patch(
         "/api/v1/job-offers/1",
         json={
-            "status": "interview",
+            "status": "closed",
         },
     )
 
     assert response.status_code == 200
-    assert response.json()["status"] == "interview"
+    assert response.json()["status"] == "closed"
 
     job_offer_service.update.assert_called_once()
 
