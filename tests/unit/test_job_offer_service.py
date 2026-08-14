@@ -74,7 +74,7 @@ def job_offer() -> JobOffer:
         source_url="https://example.com/jobs/software-engineer",
         location="Buenos Aires",
         work_mode=WorkMode.REMOTE,
-        status=JobOfferStatus.SAVED,
+        status=JobOfferStatus.ACTIVE,
         salary_min=Decimal(2500000),
         salary_max=Decimal(3000000),
         currency="ARS",
@@ -146,7 +146,7 @@ def test_get_job_offer_by_id_raises_not_found_if_job_offer_does_not_exist(
 def test_update_job_offer_success(
     job_offer_service: JobOfferService, job_offer_repository: Mock, job_offer: JobOffer
 ) -> None:
-    update_data = JobOfferUpdate(status=JobOfferStatus.INTERVIEW)
+    update_data = JobOfferUpdate(status=JobOfferStatus.CLOSED)
 
     job_offer_repository.get_by_id.return_value = job_offer
     job_offer_repository.update.return_value = job_offer

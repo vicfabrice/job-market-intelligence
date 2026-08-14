@@ -13,7 +13,7 @@ class JobOfferBase(BaseModel):
     source_url: str | None = None
     location: str | None = None
     work_mode: WorkMode | None = None
-    status: JobOfferStatus = JobOfferStatus.SAVED
+    status: JobOfferStatus = JobOfferStatus.ACTIVE
 
     salary_min: Decimal | None = None
     salary_max: Decimal | None = None
