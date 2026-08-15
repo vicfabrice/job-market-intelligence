@@ -17,6 +17,7 @@ from app.core.database import Base
 from app.models.enums import JobOfferStatus, WorkMode
 
 if TYPE_CHECKING:
+    from app.models.application import Application
     from app.models.company import Company
 
 
@@ -71,6 +72,12 @@ class JobOffer(Base):
         default=JobOfferStatus.ACTIVE,
         server_default=JobOfferStatus.ACTIVE.value,
         index=True,
+    )
+
+    application: Mapped["Application | None"] = relationship(
+        back_populates="job_offer",
+        cascade="all, delete-orphan",
+        uselist=False,
     )
 
     salary_min: Mapped[Decimal | None] = mapped_column(
