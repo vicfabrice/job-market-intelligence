@@ -11,3 +11,12 @@ class JobOfferStatus(StrEnum):
     ACTIVE = "active"
     CLOSED = "closed"
     EXPIRED = "expired"
+
+
+class ApplicationStatus(StrEnum):
+    APPLIED = "applied"
+    INTERVIEW = "interview"
+    TECHNICAL = "technical"
+    OFFER = "offer"
+    REJECTED = "rejected"
+    WITHDRAWN = "withdrawn"
