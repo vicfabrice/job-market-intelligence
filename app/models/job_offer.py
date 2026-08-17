@@ -9,6 +9,7 @@ from sqlalchemy import (
     Numeric,
     String,
     Text,
+    UniqueConstraint,
     func,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -23,6 +24,14 @@ if TYPE_CHECKING:
 
 class JobOffer(Base):
     __tablename__ = "job_offers"
+
+    __table_args__ = (
+        UniqueConstraint(
+            "source",
+            "external_id",
+            name="uq_job_offers_source_external_id",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
@@ -120,4 +129,15 @@ class JobOffer(Base):
 
     company: Mapped["Company"] = relationship(
         back_populates="job_offers",
+    )
+
+    source: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
+        index=True,
+    )
+
+    external_id: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True,
     )
