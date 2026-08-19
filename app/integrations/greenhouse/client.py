@@ -11,6 +11,7 @@ class GreenhouseClient:
         client: httpx.Client | None = None,
     ) -> None:
         self.client = client or httpx.Client(timeout=10.0)
+        self._owns_client = client is None
 
     def get_jobs(
         self,
@@ -19,9 +20,12 @@ class GreenhouseClient:
         url = f"{self.BASE_URL}/{board_token}/jobs"
 
         response = self.client.get(url)
-
         response.raise_for_status()
 
         data = response.json()
 
         return [GreenhouseJob.model_validate(job) for job in data["jobs"]]
+
+    def close(self) -> None:
+        if self._owns_client:
+            self.client.close()
