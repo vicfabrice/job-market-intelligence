@@ -64,4 +64,4 @@ class JobOfferRepository:
             JobOffer.external_id == external_id,
         )
 
-        return self.database_session.scalar(statement)
+        return self.db.scalar(statement)
