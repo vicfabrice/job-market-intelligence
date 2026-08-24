@@ -39,6 +39,7 @@ class JobIngestionService:
                 company = self.company_repository.create(
                     CompanyCreate(
                         name=job.company_name,
+                        sector=job.sector,
                     )
                 )
 

@@ -14,3 +14,4 @@ class NormalizedJobOffer(BaseModel):
     location: str | None = None
     description: str | None = None
     published_at: datetime | None = None
+    sector: str | None = None

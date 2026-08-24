@@ -28,6 +28,7 @@ def test_map_greenhouse_job_returns_normalized_job() -> None:
     result = map_greenhouse_job(
         job=job,
         company_name="Example Company",
+        sector="Technology",
     )
 
     assert result.external_id == "123456"
@@ -35,3 +36,28 @@ def test_map_greenhouse_job_returns_normalized_job() -> None:
     assert result.company_name == "Example Company"
     assert result.title == "Backend Engineer"
     assert result.location == "Remote"
+    assert result.sector == "Technology"
+
+
+def test_map_greenhouse_job_no_sector() -> None:
+    job = GreenhouseJob(
+        id=123456,
+        title="Backend Engineer",
+        absolute_url="https://example.com/jobs/123456",
+        location=GreenhouseLocation(name="Remote"),
+        updated_at=datetime(
+            2026,
+            8,
+            17,
+            12,
+            0,
+            tzinfo=UTC,
+        ),
+    )
+
+    result = map_greenhouse_job(
+        job=job,
+        company_name="Example Company",
+    )
+
+    assert result.sector is None

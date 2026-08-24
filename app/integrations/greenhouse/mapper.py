@@ -5,11 +5,13 @@ from app.schemas.normalized_job_offer import NormalizedJobOffer
 def map_greenhouse_job(
     job: GreenhouseJob,
     company_name: str,
+    sector: str | None = None,
 ) -> NormalizedJobOffer:
     return NormalizedJobOffer(
         external_id=str(job.id),
         source="greenhouse",
         company_name=company_name,
+        sector=sector,
         title=job.title,
         source_url=job.absolute_url,
         location=job.location.name,

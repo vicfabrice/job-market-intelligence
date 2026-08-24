@@ -32,9 +32,23 @@ def ingestion_service(
 @pytest.fixture
 def normalized_job() -> NormalizedJobOffer:
     return NormalizedJobOffer(
-        external_id="5209443007",
+        external_id="123",
         source="greenhouse",
         company_name="Temporal",
+        sector="Technology",
+        title="Backend Engineer",
+        source_url="https://example.com/job",
+        location="Remote",
+    )
+
+
+@pytest.fixture
+def normalized_job_new_company() -> NormalizedJobOffer:
+    return NormalizedJobOffer(
+        external_id="1234",
+        source="greenhouse",
+        company_name="New Company",
+        sector="Technology",
         title="Backend Engineer",
         source_url="https://example.com/job",
         location="Remote",
@@ -59,3 +73,24 @@ def test_ingest_skips_existing_job_offer(
     company_repository.get_by_name.assert_not_called()
     company_repository.create.assert_not_called()
     job_offer_repository.create.assert_not_called()
+
+
+def test_ingest_company_does_not_exist_creates_company(
+    ingestion_service: JobIngestionService,
+    company_repository: Mock,
+    job_offer_repository: Mock,
+    normalized_job_new_company: NormalizedJobOffer,
+) -> None:
+    job_offer_repository.get_by_source_and_external_id.return_value = None
+    company_repository.get_by_name.return_value = None
+    company_repository.create.return_value = Mock(id=2)
+
+    result = ingestion_service.ingest([normalized_job_new_company])
+
+    assert result.received == 1
+    assert result.created == 1
+    assert result.skipped == 0
+    assert result.companies_created == 1
+
+    company_repository.create.assert_called_once()
+    job_offer_repository.create.assert_called_once()
