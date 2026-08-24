@@ -23,6 +23,7 @@ def application() -> Application:
         notes="Applied through company website",
         created_at=current_time,
         updated_at=current_time,
+        cv_customized=False,
     )
 
 
@@ -156,3 +157,64 @@ def test_delete_application_returns_no_content(
     assert response.content == b""
 
     application_service.delete.assert_called_once_with(1)
+
+
+def test_create_application_defaults_cv_customized_to_false(
+    client: TestClient,
+    application_service: Mock,
+    application: Application,
+) -> None:
+    application.cv_customized = False
+    application_service.create.return_value = application
+
+    response = client.post(
+        "/api/v1/applications",
+        json={
+            "job_offer_id": 1,
+            "applied_at": "2026-08-24T12:00:00Z",
+            "notes": "Applied through company website",
+        },
+    )
+
+    assert response.status_code == 201
+    assert response.json()["cv_customized"] is False
+
+
+def test_update_application_cv_customized(
+    client: TestClient,
+    application_service: Mock,
+    application: Application,
+) -> None:
+    application.cv_customized = True
+    application_service.update.return_value = application
+
+    response = client.patch(
+        "/api/v1/applications/1",
+        json={
+            "cv_customized": True,
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["cv_customized"] is True
+
+    application_service.update.assert_called_once()
+
+
+def test_update_application_can_set_cv_customized_to_false(
+    client: TestClient,
+    application_service: Mock,
+    application: Application,
+) -> None:
+    application.cv_customized = False
+    application_service.update.return_value = application
+
+    response = client.patch(
+        "/api/v1/applications/1",
+        json={
+            "cv_customized": False,
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["cv_customized"] is False
