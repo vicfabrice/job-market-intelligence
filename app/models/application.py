@@ -64,3 +64,9 @@ class Application(Base):
     job_offer: Mapped["JobOffer"] = relationship(
         back_populates="application",
     )
+
+    cv_customized: Mapped[bool] = mapped_column(
+        nullable=False,
+        default=False,
+        server_default="false",
+    )
