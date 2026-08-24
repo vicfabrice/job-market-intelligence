@@ -53,3 +53,15 @@ class JobOfferRepository:
     ) -> None:
         self.db.delete(job_offer)
         self.db.commit()
+
+    def get_by_source_and_external_id(
+        self,
+        source: str,
+        external_id: str,
+    ) -> JobOffer | None:
+        statement = select(JobOffer).where(
+            JobOffer.source == source,
+            JobOffer.external_id == external_id,
+        )
+
+        return self.db.scalar(statement)

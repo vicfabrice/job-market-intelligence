@@ -22,6 +22,9 @@ class JobOfferBase(BaseModel):
     description: str | None = None
     published_at: datetime | None = None
 
+    source: str | None = None
+    external_id: str | None = None
+
     @field_validator("title")
     @classmethod
     def validate_title(cls, value: str) -> str:
