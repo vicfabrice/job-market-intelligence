@@ -6,6 +6,7 @@ from app.models.job_offer import JobOffer
 from app.repositories.company_repository import CompanyRepository
 from app.repositories.job_offer_repository import JobOfferRepository
 from app.schemas.job_offer import JobOfferCreate, JobOfferUpdate
+from app.schemas.job_offer_filters import JobOfferFilters
 
 
 class JobOfferService:
@@ -25,8 +26,11 @@ class JobOfferService:
 
         return self.job_offer_repository.create(job_offer_data)
 
-    def get_all(self) -> list[JobOffer]:
-        return self.job_offer_repository.get_all()
+    def get_all(
+        self,
+        filters: JobOfferFilters,
+    ) -> list[JobOffer]:
+        return self.job_offer_repository.get_all(filters)
 
     def get_by_id(
         self,

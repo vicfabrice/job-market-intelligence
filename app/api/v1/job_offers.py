@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, Query, Response, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.models.enums import JobOfferStatus, WorkMode
 from app.repositories.company_repository import CompanyRepository
 from app.repositories.job_offer_repository import JobOfferRepository
 from app.schemas.job_offer import (
@@ -9,6 +10,7 @@ from app.schemas.job_offer import (
     JobOfferResponse,
     JobOfferUpdate,
 )
+from app.schemas.job_offer_filters import JobOfferFilters
 from app.services.job_offer_service import JobOfferService
 
 router = APIRouter(
@@ -46,9 +48,37 @@ def create_job_offer(
     response_model=list[JobOfferResponse],
 )
 def get_job_offers(
+    title: str | None = None,
+    sector: str | None = None,
+    location: str | None = None,
+    work_mode: WorkMode | None = None,
+    status: JobOfferStatus | None = None,
+    source: str | None = None,
+    company_id: int | None = None,
+    limit: int = Query(
+        default=50,
+        ge=1,
+        le=100,
+    ),
+    offset: int = Query(
+        default=0,
+        ge=0,
+    ),
     job_offer_service: JobOfferService = Depends(get_job_offer_service),
 ) -> list[JobOfferResponse]:
-    return job_offer_service.get_all()
+    filters = JobOfferFilters(
+        title=title,
+        sector=sector,
+        location=location,
+        work_mode=work_mode,
+        status=status,
+        source=source,
+        company_id=company_id,
+        limit=limit,
+        offset=offset,
+    )
+
+    return job_offer_service.get_all(filters)
 
 
 @router.get(
