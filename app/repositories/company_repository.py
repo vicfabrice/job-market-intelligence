@@ -37,3 +37,15 @@ class CompanyRepository:
         statement = select(Company).where(Company.name == company_name)
 
         return self.database_session.scalar(statement)
+
+    def update_sector(
+        self,
+        company: Company,
+        sector: str,
+    ) -> Company:
+        company.sector = sector
+
+        self.database_session.commit()
+        self.database_session.refresh(company)
+
+        return company

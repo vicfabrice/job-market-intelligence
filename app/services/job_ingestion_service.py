@@ -22,17 +22,6 @@ class JobIngestionService:
         result = JobIngestionResult(received=len(jobs))
 
         for job in jobs:
-            existing_job_offer = (
-                self.job_offer_repository.get_by_source_and_external_id(
-                    source=job.source,
-                    external_id=job.external_id,
-                )
-            )
-
-            if existing_job_offer is not None:
-                result.skipped += 1
-                continue
-
             company = self.company_repository.get_by_name(job.company_name)
 
             if company is None:
@@ -44,6 +33,23 @@ class JobIngestionService:
                 )
 
                 result.companies_created += 1
+
+            elif company.sector is None and job.sector is not None:
+                company = self.company_repository.update_sector(
+                    company=company,
+                    sector=job.sector,
+                )
+
+            existing_job_offer = (
+                self.job_offer_repository.get_by_source_and_external_id(
+                    source=job.source,
+                    external_id=job.external_id,
+                )
+            )
+
+            if existing_job_offer is not None:
+                result.skipped += 1
+                continue
 
             self.job_offer_repository.create(
                 JobOfferCreate(
