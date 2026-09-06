@@ -20,6 +20,7 @@ from app.models.enums import JobOfferStatus, WorkMode
 if TYPE_CHECKING:
     from app.models.application import Application
     from app.models.company import Company
+    from app.models.skill import Skill
 
 
 class JobOffer(Base):
@@ -69,6 +70,11 @@ class JobOffer(Base):
         ),
         nullable=True,
         index=True,
+    )
+
+    skills: Mapped[list["Skill"]] = relationship(
+        secondary="job_offer_skills",
+        back_populates="job_offers",
     )
 
     status: Mapped[JobOfferStatus] = mapped_column(
