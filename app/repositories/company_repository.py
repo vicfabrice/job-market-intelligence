@@ -20,8 +20,7 @@ class CompanyRepository:
         )
 
         self.database_session.add(company)
-        self.database_session.commit()
-        self.database_session.refresh(company)
+        self.database_session.flush()
 
         return company
 
@@ -45,7 +44,6 @@ class CompanyRepository:
     ) -> Company:
         company.sector = sector
 
-        self.database_session.commit()
-        self.database_session.refresh(company)
+        self.database_session.flush()
 
         return company

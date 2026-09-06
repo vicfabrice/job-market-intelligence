@@ -6,6 +6,7 @@ from app.repositories.company_repository import CompanyRepository
 from app.repositories.job_offer_repository import JobOfferRepository
 from app.schemas.normalized_job_offer import NormalizedJobOffer
 from app.services.job_ingestion_service import JobIngestionService
+from app.services.job_offer_skill_service import JobOfferSkillService
 
 
 @pytest.fixture
@@ -19,13 +20,27 @@ def job_offer_repository() -> Mock:
 
 
 @pytest.fixture
+def database_session() -> Mock:
+    return Mock()
+
+
+@pytest.fixture
+def job_offer_skill_service() -> Mock:
+    return Mock(spec=JobOfferSkillService)
+
+
+@pytest.fixture
 def ingestion_service(
+    database_session: Mock,
     company_repository: Mock,
     job_offer_repository: Mock,
+    job_offer_skill_service: Mock,
 ) -> JobIngestionService:
     return JobIngestionService(
+        database_session=database_session,
         company_repository=company_repository,
         job_offer_repository=job_offer_repository,
+        job_offer_skill_service=job_offer_skill_service,
     )
 
 
@@ -57,9 +72,11 @@ def normalized_job_new_company() -> NormalizedJobOffer:
 
 def test_ingest_skips_existing_job_offer(
     ingestion_service: JobIngestionService,
+    database_session: Mock,
     company_repository: Mock,
     job_offer_repository: Mock,
     normalized_job: NormalizedJobOffer,
+    job_offer_skill_service: Mock,
 ) -> None:
     job_offer_repository.get_by_source_and_external_id.return_value = Mock()
 
@@ -72,12 +89,16 @@ def test_ingest_skips_existing_job_offer(
 
     company_repository.create.assert_not_called()
     job_offer_repository.create.assert_not_called()
+    database_session.commit.assert_called_once()
+    job_offer_skill_service.extract_and_assign.assert_not_called()
 
 
 def test_ingest_company_does_not_exist_creates_company(
     ingestion_service: JobIngestionService,
+    database_session: Mock,
     company_repository: Mock,
     job_offer_repository: Mock,
+    job_offer_skill_service: Mock,
     normalized_job_new_company: NormalizedJobOffer,
 ) -> None:
     job_offer_repository.get_by_source_and_external_id.return_value = None
@@ -93,6 +114,11 @@ def test_ingest_company_does_not_exist_creates_company(
 
     company_repository.create.assert_called_once()
     job_offer_repository.create.assert_called_once()
+    job_offer_skill_service.extract_and_assign.assert_called_once_with(
+        job_offer_repository.create.return_value
+    )
+
+    database_session.commit.assert_called_once()
 
 
 def test_ingest_existing_job_updates_missing_company_sector(

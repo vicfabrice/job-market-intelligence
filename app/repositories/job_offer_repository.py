@@ -15,8 +15,7 @@ class JobOfferRepository:
         job_offer = JobOffer(**job_offer_data.model_dump())
 
         self.db.add(job_offer)
-        self.db.commit()
-        self.db.refresh(job_offer)
+        self.db.flush()
 
         return job_offer
 
