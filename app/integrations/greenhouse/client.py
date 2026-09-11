@@ -19,7 +19,10 @@ class GreenhouseClient:
     ) -> list[GreenhouseJob]:
         url = f"{self.BASE_URL}/{board_token}/jobs"
 
-        response = self.client.get(url)
+        response = self.client.get(
+            url,
+            params={"content": "true"},
+        )
         response.raise_for_status()
 
         data = response.json()
