@@ -9,8 +9,8 @@ class GreenhouseCompanyConfig(BaseModel):
 
 GREENHOUSE_COMPANIES = [
     GreenhouseCompanyConfig(
-        name="Temporal",
-        board_token="temporaltechnologies",
-        sector="Technology",
+        name="Anthropic",
+        board_token="anthropic",
+    sector="Technology",
     ),
 ]

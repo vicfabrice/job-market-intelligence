@@ -13,3 +13,4 @@ class GreenhouseJob(BaseModel):
     absolute_url: str
     location: GreenhouseLocation
     updated_at: datetime
+    content: str | None = None

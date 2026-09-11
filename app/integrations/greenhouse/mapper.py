@@ -16,4 +16,5 @@ def map_greenhouse_job(
         source_url=job.absolute_url,
         location=job.location.name,
         published_at=job.updated_at,
+        description=job.content,
     )
