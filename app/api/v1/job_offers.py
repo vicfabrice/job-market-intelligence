@@ -1,16 +1,19 @@
-from fastapi import APIRouter, Depends, Query, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.models.enums import JobOfferStatus, WorkMode
 from app.repositories.company_repository import CompanyRepository
 from app.repositories.job_offer_repository import JobOfferRepository
+from app.schemas.job_matching import JobMatchRequest, JobMatchResponse
 from app.schemas.job_offer import (
     JobOfferCreate,
     JobOfferResponse,
     JobOfferUpdate,
 )
 from app.schemas.job_offer_filters import JobOfferFilters
+from app.services.job_matching_service import JobMatchingService
+from app.services.job_offer_matching_service import JobOfferMatchingService
 from app.services.job_offer_service import JobOfferService
 
 router = APIRouter(
@@ -118,3 +121,35 @@ def delete_job_offer(
     job_offer_service.delete(job_offer_id)
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post(
+    "/{job_offer_id}/match",
+    response_model=JobMatchResponse,
+)
+def match_job_offer(
+    job_offer_id: int,
+    request: JobMatchRequest,
+    db: Session = Depends(get_db),
+) -> JobMatchResponse:
+    matching_service = JobOfferMatchingService(
+        job_offer_repository=JobOfferRepository(db),
+        job_matching_service=JobMatchingService(),
+    )
+
+    try:
+        result = matching_service.match(
+            job_offer_id=job_offer_id,
+            candidate_skills=request.candidate_skills,
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=404,
+            detail=str(exc),
+        ) from exc
+
+    return JobMatchResponse(
+        matched_skills=result.matched_skills,
+        missing_skills=result.missing_skills,
+        score=result.score,
+    )
