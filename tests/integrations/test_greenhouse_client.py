@@ -7,9 +7,8 @@ def test_get_jobs_returns_greenhouse_jobs() -> None:
     def handler(
         request: httpx.Request,
     ) -> httpx.Response:
-        assert str(request.url) == (
-            "https://boards-api.greenhouse.io/v1/boards/example-company/jobs"
-        )
+        assert request.url.path == "/v1/boards/example-company/jobs"
+        assert request.url.params["content"] == "true"
 
         return httpx.Response(
             200,
@@ -21,6 +20,7 @@ def test_get_jobs_returns_greenhouse_jobs() -> None:
                         "absolute_url": ("https://example.com/jobs/123456"),
                         "location": {"name": "Remote"},
                         "updated_at": ("2026-08-17T12:00:00Z"),
+                        "content": "<p>Experience with Python and Docker</p>",
                     }
                 ]
             },
@@ -41,3 +41,4 @@ def test_get_jobs_returns_greenhouse_jobs() -> None:
     assert job.id == 123456
     assert job.title == "Backend Engineer"
     assert job.location.name == "Remote"
+    assert jobs[0].content == "<p>Experience with Python and Docker</p>"
